@@ -1,29 +1,30 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
+import { Colors } from '@/constants/Colors';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: '#0c2340', // Dark navy background
+          backgroundColor: '#0c2340', // Dark navy background to match the reference
           borderTopWidth: 0,
           elevation: 0,
           height: 60,
           paddingBottom: 8,
         },
         tabBarShowLabel: false,
-        tabBarActiveTintColor: '#0066ff', // Primary blue color
-        tabBarInactiveTintColor: '#777',
+        tabBarActiveTintColor: Colors.primary[500], // Blue accent color
+        tabBarInactiveTintColor: '#8E8E93', // Gray inactive color
         headerShown: false,
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Browse',
+          title: 'Home',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" size={size} color={color} />
           ),
@@ -44,7 +45,9 @@ export default function TabLayout() {
           title: 'Player',
           tabBarIcon: ({ color, size }) => (
             <View style={styles.playerTab}>
-              <Ionicons name="play" size={size} color="#fff" />
+              <View style={styles.playerTabInner}>
+                <MaterialIcons name="play-arrow" size={24} color="#fff" />
+              </View>
             </View>
           ),
         }}
@@ -73,17 +76,25 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   playerTab: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#0066ff', // Primary blue
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: '#0c2340', // Matching background
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 8,
-    shadowColor: '#0066ff',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    bottom: 10, // Lift it a bit above other tabs
+    bottom: 10, // Lift it up a bit
   },
+  playerTabInner: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(38, 116, 226, 0.9)', // Blue similar to the reference
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: 'rgba(38, 116, 226, 0.7)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 5,
+    elevation: 8,
+  }
 });
