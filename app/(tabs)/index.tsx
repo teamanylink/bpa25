@@ -12,19 +12,11 @@ import {
   SafeAreaView,
   StatusBar
 } from 'react-native';
-import { MaterialIcons, Feather } from '@expo/vector-icons';
+import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
+import { Colors } from '@/constants/Colors';
 
-// Theme colors
-const COLORS = {
-  background: '#0c2340',  // Dark navy blue background
-  primary: '#0066ff',     // Primary blue accent color
-  text: '#ffffff',        // White text
-  textSecondary: '#8E8E93', // Secondary text color
-  cardBackground: 'rgba(255, 255, 255, 0.08)', // Card background with slight transparency
-};
-
-// Mock data for podcasts by category
+// Mock data for podcasts
 const MOCK_PODCASTS = [
   { 
     id: '1', 
@@ -46,7 +38,7 @@ const MOCK_PODCASTS = [
   },
 ];
 
-// Categories
+// Categories for the top filter
 const CATEGORIES = [
   { id: '1', name: 'ALL' },
   { id: '2', name: 'News' },
@@ -54,10 +46,11 @@ const CATEGORIES = [
   { id: '4', name: 'Health' },
 ];
 
-// Podcast sections to display
+// Content sections
 const SECTIONS = [
-  { id: '1', title: 'Top shows', data: MOCK_PODCASTS },
-  { id: '2', title: 'Top Episodes', data: MOCK_PODCASTS },
+  { id: 'featured', title: '', data: MOCK_PODCASTS },
+  { id: 'topShows', title: 'Top shows', data: MOCK_PODCASTS },
+  { id: 'topEpisodes', title: 'Top Episodes', data: MOCK_PODCASTS },
 ];
 
 const { width } = Dimensions.get('window');
@@ -67,7 +60,7 @@ export default function BrowsePage() {
   const [activeCategory, setActiveCategory] = useState('1'); // Default to 'ALL'
   const [searchText, setSearchText] = useState('');
 
-  // Render a podcast cover item
+  // Render a podcast item
   const renderPodcastItem = ({ item }) => (
     <Link href={`/podcast/${item.id}`} asChild>
       <TouchableOpacity style={styles.podcastItem}>
@@ -104,26 +97,25 @@ export default function BrowsePage() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       
-      {/* Search bar */}
+      {/* Search bar and shuffle button */}
       <View style={styles.searchContainer}>
         <View style={styles.searchBar}>
-          <Feather name="search" size={20} color={COLORS.textSecondary} style={styles.searchIcon} />
+          <Feather name="search" size={20} color="#8E8E93" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search"
-            placeholderTextColor={COLORS.textSecondary}
+            placeholderTextColor="#8E8E93"
             value={searchText}
             onChangeText={setSearchText}
           />
         </View>
         
-        {/* Shuffle button */}
         <TouchableOpacity style={styles.shuffleButton}>
-          <MaterialIcons name="shuffle" size={24} color={COLORS.text} />
+          <MaterialIcons name="shuffle" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
       
-      {/* Category tabs */}
+      {/* Categories */}
       <FlatList
         data={CATEGORIES}
         renderItem={renderCategoryItem}
@@ -134,15 +126,17 @@ export default function BrowsePage() {
         contentContainerStyle={styles.categoriesContent}
       />
       
-      {/* Main content - podcast sections */}
+      {/* Main content */}
       <ScrollView 
         style={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* Loop through each section */}
-        {SECTIONS.map(section => (
-          <View key={section.id} style={styles.section}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
+        {SECTIONS.map((section, index) => (
+          <View key={section.id} style={[styles.section, index === 0 && styles.topSection]}>
+            {section.title ? (
+              <Text style={styles.sectionTitle}>{section.title}</Text>
+            ) : null}
+            
             <FlatList
               data={section.data}
               renderItem={renderPodcastItem}
@@ -154,7 +148,6 @@ export default function BrowsePage() {
           </View>
         ))}
         
-        {/* Ensure enough bottom padding for scrolling */}
         <View style={styles.bottomPadding} />
       </ScrollView>
     </SafeAreaView>
@@ -164,12 +157,12 @@ export default function BrowsePage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: '#0c2340', // Dark navy background from the reference
   },
   searchContainer: {
     flexDirection: 'row',
     paddingHorizontal: 16,
-    marginTop: 8,
+    marginTop: 16,
     marginBottom: 16,
     alignItems: 'center',
   },
@@ -177,26 +170,26 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.cardBackground,
-    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)', // Slightly transparent background
+    borderRadius: 24, // More rounded corners as shown in the reference
     paddingVertical: 10,
-    paddingHorizontal: 12,
-    marginRight: 10,
+    paddingHorizontal: 16,
+    marginRight: 12,
   },
   searchIcon: {
     marginRight: 8,
   },
   searchInput: {
     flex: 1,
-    color: COLORS.text,
+    color: '#fff',
     fontSize: 16,
     height: 40,
   },
   shuffleButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 10,
-    backgroundColor: COLORS.cardBackground,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -212,17 +205,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 20,
     marginRight: 10,
-    backgroundColor: COLORS.cardBackground,
+    backgroundColor: '#1a3353', // Darker category tab background
   },
   activeCategoryTab: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: Colors.primary[500], // Blue active tab
   },
   categoryText: {
-    color: COLORS.textSecondary,
+    color: '#fff',
     fontWeight: '600',
+    fontSize: 14,
   },
   activeCategoryText: {
-    color: COLORS.text,
+    color: '#fff',
+    fontWeight: '700',
   },
   content: {
     flex: 1,
@@ -230,10 +225,13 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 30,
   },
+  topSection: {
+    marginBottom: 40, // More space after the first section
+  },
   sectionTitle: {
-    fontSize: 24,
+    fontSize: 28, // Larger section titles as in reference
     fontWeight: 'bold',
-    color: COLORS.text,
+    color: '#fff',
     marginBottom: 16,
     paddingHorizontal: 16,
   },
@@ -253,6 +251,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   bottomPadding: {
-    height: 100,
+    height: 100, // Extra padding at the bottom for scrolling
   },
 });
